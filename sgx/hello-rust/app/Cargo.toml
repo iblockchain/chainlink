@@ -5,5 +5,5 @@ authors = ["duanran01 <duanran01@baidu.com>"]
 build = "build.rs"
 
 [dependencies]
-sgx_types = { path = "../../../sgx_types" }
-sgx_urts = { path = "../../../sgx_urts" }
+sgx_types = "0.9.8"
+sgx_urts = "0.9.8"
