@@ -1,0 +1,19 @@
+[package]
+name = "adapters"
+version = "0.1.0"
+authors = ["John Barker <jebarker@gmail.com>"]
+build = "build.rs"
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = []
+global_init = []
+global_exit = []
+
+[dependencies]
+errno = "0.2.3"
+sgx_trts = "=0.9.8"
+sgx_types = "=0.9.8"
+sgx_urts = "=0.9.8"

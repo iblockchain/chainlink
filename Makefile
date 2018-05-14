@@ -3,12 +3,18 @@
 
 REPO=smartcontract/chainlink
 LDFLAGS=-ldflags "-X github.com/smartcontractkit/chainlink/store.Sha=`git rev-parse HEAD`"
+#LDFLAGS=-ldflags "-X github.com/smartcontractkit/chainlink/store.Sha=`git rev-parse HEAD` -L $(dir $(LIBADAPTERS))"
+
+ENVIRONMENT ?= release
+
+LIBADAPTERS := ./sgx/target/$(ENVIRONMENT)/libadapters.so
+LIBS := $(LIBADAPTERS)
 
 dep: ## Ensure chainlink's go dependencies are installed.
 	@dep ensure
 
-build: dep ## Build chainlink.
-	@go build $(LDFLAGS) -o chainlink
+build: $(LIBS) ## Build chainlink.
+	ENVIRONMENT=$(ENVIRONMENT) go build $(LDFLAGS) -o chainlink
 
 install: dep ## Install chainlink
 	@go install $(LDFLAGS)
@@ -18,6 +24,9 @@ docker: ## Build the docker image.
 
 dockerpush: ## Push the docker image to dockerhub
 	@docker push $(REPO)
+
+$(LIBADAPTERS): sgx/**
+	ENVIRONMENT=$(ENVIRONMENT) $(MAKE) -C ./sgx/
 
 help:
 	@echo ""

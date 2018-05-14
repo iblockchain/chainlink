@@ -1,5 +1,11 @@
 package cmd
 
+/*
+#cgo LDFLAGS: -L../sgx/target/release/ -ladapters
+#include "../sgx/libadapters/adapters.h"
+*/
+import "C"
+
 import (
 	"bytes"
 	"encoding/json"
@@ -44,6 +50,11 @@ func (cli *Client) RunNode(c *clipkg.Context) error {
 	config := updateConfig(cli.Config, c.Bool("debug"))
 	logger.SetLogger(config.CreateProductionLogger())
 	logger.Infow("Starting Chainlink Node " + strpkg.Version + " at commit " + strpkg.Sha)
+
+	_, err := C.init_enclave()
+	if err != nil {
+		return cli.errorOut(fmt.Errorf("error initializing SGX enclave: %+v", err))
+	}
 
 	app := cli.AppFactory.NewApplication(config)
 	store := app.GetStore()
