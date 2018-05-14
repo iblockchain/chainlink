@@ -7,8 +7,9 @@ LDFLAGS=-ldflags "-X github.com/smartcontractkit/chainlink/store.Sha=`git rev-pa
 
 ENVIRONMENT ?= release
 
+ENCLAVE := ./sgx/target/$(ENVIRONMENT)/enclave.so
 LIBADAPTERS := ./sgx/target/$(ENVIRONMENT)/libadapters.so
-LIBS := $(LIBADAPTERS)
+LIBS := $(LIBADAPTERS) $(ENCLAVE)
 
 dep: ## Ensure chainlink's go dependencies are installed.
 	@dep ensure
@@ -25,7 +26,7 @@ docker: ## Build the docker image.
 dockerpush: ## Push the docker image to dockerhub
 	@docker push $(REPO)
 
-$(LIBADAPTERS): sgx/**
+$(LIBADAPTERS) $(ENCLAVE): sgx/**
 	ENVIRONMENT=$(ENVIRONMENT) $(MAKE) -C ./sgx/
 
 help:

@@ -1,15 +1,15 @@
 [[package]]
-name = "Helloworldsampleenclave"
-version = "0.9.8"
+name = "cfg-if"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "enclave"
+version = "0.1.0"
 dependencies = [
  "sgx_tstd 0.9.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "sgx_types 0.9.8 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "cfg-if"
-version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "filetime"

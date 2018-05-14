@@ -1,9 +1,0 @@
-[package]
-name = "app"
-version = "0.9.8"
-authors = ["duanran01 <duanran01@baidu.com>"]
-build = "build.rs"
-
-[dependencies]
-sgx_types = "0.9.8"
-sgx_urts = "0.9.8"
