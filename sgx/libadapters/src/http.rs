@@ -1,56 +1,27 @@
-//extern crate reqwest;
-use libc;
-//use std::ffi::{CStr, CString};
-use std::ptr;
-//use reqwest::header::ContentType;
+use sgx_types::*;
 
+use ENCLAVE;
 
-#[no_mangle]
-pub extern "C" fn perform_http_get(_url: *const libc::c_char) -> *const libc::c_char {
-    //let buf_url = unsafe { CStr::from_ptr(url).to_bytes() };
-    //let str_url = String::from_utf8(buf_url.to_vec()).unwrap();
-
-    //let result = http_get(&str_url);
-    //match result {
-        //Err(_) => ptr::null(),
-        //Ok(body) => CString::new(body).unwrap().into_raw(),
-    //}
-    ptr::null()
+extern {
+    fn sgx_http_get(eid: sgx_enclave_id_t,
+                    retval: *mut sgx_status_t,
+                    url: *const u8) -> sgx_status_t;
+    fn sgx_http_post(eid: sgx_enclave_id_t,
+                     retval: *mut sgx_status_t,
+                     url: *const u8,
+                     body: *const u8) -> sgx_status_t;
 }
 
-//fn http_get(url: &String) -> Result<String, reqwest::Error> {
-    //let client = reqwest::Client::new();
-    //let body = client.get(url)
-        //.header(ContentType::json())
-        //.send()?
-        //.text()?;
-
-    //Ok(body.to_string())
-//}
-
 #[no_mangle]
-pub extern "C" fn perform_http_post(_url: *const libc::c_char, _body: *const libc::c_char) -> *const libc::c_char {
-    //let buf_url = unsafe { CStr::from_ptr(url).to_bytes() };
-    //let str_url = String::from_utf8(buf_url.to_vec()).unwrap();
-
-    //let buf_body = unsafe { CStr::from_ptr(body).to_bytes() };
-    //let str_body = String::from_utf8(buf_body.to_vec()).unwrap();
-
-    //let result = http_post(&str_url, str_body);
-    //match result {
-        //Err(_) => ptr::null(),
-        //Ok(body) => CString::new(body).unwrap().into_raw(),
-    //}
-    ptr::null()
+pub extern "C" fn http_get(url: *const u8) -> sgx_status_t {
+    let mut retval = sgx_status_t::SGX_SUCCESS;
+    unsafe { sgx_http_get(ENCLAVE.geteid(), &mut retval, url); }
+    retval
 }
 
-//fn http_post(url: &String, body: String) -> Result<String, reqwest::Error> {
-    //let client = reqwest::Client::new();
-    //let body = client.post(url)
-        //.header(ContentType::json())
-        //.body(body)
-        //.send()?
-        //.text()?;
-    
-    //Ok(body.to_string())
-//}
+#[no_mangle]
+pub extern "C" fn http_post(url: *const u8, body: *const u8) -> sgx_status_t {
+    let mut retval = sgx_status_t::SGX_SUCCESS;
+    unsafe { sgx_http_post(ENCLAVE.geteid(), &mut retval, url, body); }
+    retval
+}

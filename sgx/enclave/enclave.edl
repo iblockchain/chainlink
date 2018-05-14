@@ -1,6 +1,6 @@
 enclave {
   trusted {
-    public sgx_status_t http_get([in] const uint8_t* url);
-    public sgx_status_t http_post([in] const uint8_t* url, [in] const uint8_t* body);
+    public sgx_status_t sgx_http_get([in] const uint8_t* url);
+    public sgx_status_t sgx_http_post([in] const uint8_t* url, [in] const uint8_t* body);
   };
 };

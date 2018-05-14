@@ -1,8 +1,13 @@
 #![feature(libc)]
 extern crate libc;
+
 extern crate errno;
 extern crate sgx_types;
 extern crate sgx_urts;
+
+#[macro_use]
+extern crate lazy_static;
+
 use sgx_types::*;
 use sgx_urts::SgxEnclave;
 use errno::{Errno, set_errno};
@@ -11,12 +16,12 @@ pub mod http;
 
 static ENCLAVE_FILE: &'static str = "enclave.signed.so";
 
-#[no_mangle]
-pub extern "C" fn init_enclave() {
-    if perform_enclave_init().is_err() {
-        // Go uses the C _errno variable to get errors from C
-        set_errno(Errno(1));
-    }
+lazy_static! {
+    pub static ref ENCLAVE: SgxEnclave = {
+        perform_enclave_init().unwrap_or_else(|err| {
+            panic!("Failed to initialize the enclave: {}", err);
+        })
+    };
 }
 
 fn perform_enclave_init() -> SgxResult<SgxEnclave> {
@@ -30,10 +35,9 @@ fn perform_enclave_init() -> SgxResult<SgxEnclave> {
         },
         misc_select: 0,
     };
-    let enclave = try!(SgxEnclave::create(ENCLAVE_FILE,
-                                          debug,
-                                          &mut launch_token,
-                                          &mut launch_token_updated,
-                                          &mut misc_attr));
-    Ok(enclave)
+    SgxEnclave::create(ENCLAVE_FILE,
+                       debug,
+                       &mut launch_token,
+                       &mut launch_token_updated,
+                       &mut misc_attr)
 }
