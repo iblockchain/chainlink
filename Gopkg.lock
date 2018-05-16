@@ -132,10 +132,43 @@
   revision = "553a641470496b2327abcac10b36396bd98e45c9"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/google/pprof"
+  packages = [
+    "driver",
+    "internal/binutils",
+    "internal/driver",
+    "internal/elfexec",
+    "internal/graph",
+    "internal/measurement",
+    "internal/plugin",
+    "internal/report",
+    "internal/symbolizer",
+    "internal/symbolz",
+    "profile",
+    "third_party/d3",
+    "third_party/d3flamegraph",
+    "third_party/svgpan"
+  ]
+  revision = "4d67f66d7c9469639518a80f378434bb7e9156b7"
+
+[[projects]]
+  name = "github.com/gorilla/context"
+  packages = ["."]
+  revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
+  version = "v1.1.1"
+
+[[projects]]
   name = "github.com/gorilla/websocket"
   packages = ["."]
   revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
   version = "v1.2.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/ianlancetaylor/demangle"
+  packages = ["."]
+  revision = "4883227f66371e02c4948937d3e2be1664d9be38"
 
 [[projects]]
   name = "github.com/jpillora/backoff"
@@ -330,6 +363,26 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/arch"
+  packages = [
+    "arm/armasm",
+    "arm64/arm64asm",
+    "ppc64/ppc64asm",
+    "x86/x86asm"
+  ]
+  revision = "1b162167b1253ef84c57439b428edc67a9ca27ed"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/blog"
+  packages = [
+    "content/context/google",
+    "content/context/userip"
+  ]
+  revision = "8a50814fd77e1d71e99503d3e0c41b8d466f8138"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = [
     "pbkdf2",
@@ -342,6 +395,7 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = [
+    "context",
     "html",
     "html/atom",
     "html/charset",
@@ -361,6 +415,8 @@
 [[projects]]
   name = "golang.org/x/text"
   packages = [
+    "collate",
+    "collate/build",
     "encoding",
     "encoding/charmap",
     "encoding/htmlindex",
@@ -371,16 +427,33 @@
     "encoding/simplifiedchinese",
     "encoding/traditionalchinese",
     "encoding/unicode",
+    "internal/colltab",
+    "internal/format",
     "internal/gen",
     "internal/tag",
+    "internal/triegen",
+    "internal/ucd",
     "internal/utf8internal",
     "language",
+    "language/display",
     "runes",
     "transform",
-    "unicode/cldr"
+    "unicode/cldr",
+    "unicode/norm"
   ]
   revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
   version = "v0.3.0"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/tour"
+  packages = [
+    "pic",
+    "reader",
+    "tree",
+    "wc"
+  ]
+  revision = "daf29d8a377475fc0e139bcc58713575d6d3e0f2"
 
 [[projects]]
   name = "gopkg.in/fatih/set.v0"
@@ -413,6 +486,12 @@
   revision = "c1b8fa8bdccecb0b8db834ee0b92fdbcfa606dd6"
 
 [[projects]]
+  branch = "v2"
+  name = "gopkg.in/tomb.v2"
+  packages = ["."]
+  revision = "d5d1b5820637886def9eef33e03a27a9f166942c"
+
+[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
@@ -421,6 +500,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5e1fd1259b5d2becd48de9626d3b9daa7b37530015c37e54c672fdbb65c88214"
+  inputs-digest = "f9f80548544b65a54026f636303087fa743d41dcc5d888f0e66fa5b60d2c17b8"
   solver-name = "gps-cdcl"
   solver-version = 1

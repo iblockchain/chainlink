@@ -8,20 +8,36 @@ extern crate sgx_urts;
 #[macro_use]
 extern crate lazy_static;
 
+use std::panic;
+
 use sgx_types::*;
 use sgx_urts::SgxEnclave;
-use errno::{Errno, set_errno};
+use errno::{set_errno, Errno};
 
 pub mod http;
 
 static ENCLAVE_FILE: &'static str = "enclave.signed.so";
 
+// lazy_static allows us to setup a global value to persist the enclave in, so that we don't have
+// to pass the SgxEnclave into go territory and then back again.
 lazy_static! {
-    pub static ref ENCLAVE: SgxEnclave = {
+    static ref ENCLAVE: SgxEnclave = {
         perform_enclave_init().unwrap_or_else(|err| {
             panic!("Failed to initialize the enclave: {}", err);
         })
     };
+}
+
+#[no_mangle]
+pub extern "C" fn init_enclave() {
+    // lazy_statics don't have a way to return an error, so setup a panic handler.
+    let result = panic::catch_unwind(|| {
+        lazy_static::initialize(&ENCLAVE);
+    });
+    if result.is_err() {
+        // Go uses the C _errno variable to get errors from C
+        set_errno(Errno(1));
+    }
 }
 
 fn perform_enclave_init() -> SgxResult<SgxEnclave> {

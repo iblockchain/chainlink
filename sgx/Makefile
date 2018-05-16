@@ -8,14 +8,15 @@ ENVIRONMENT ?= release
 # SGX SDK settings ------
 #
 
-SGX_SDK ?= /opt/intel/sgxsdk
-SGX_EMULATOR ?= no
+SGX_SDK ?= /opt/sgxsdk
+SGX_SIMULATION ?= no
 
 #
 # Flags -----------------
 #
 
-SGX_BIN := $(SGX_SDK)/bin/x64/
+CARGO ?= cargo
+SGX_BIN := $(SGX_SDK)/bin/x64
 SGX_EDGER8R := $(SGX_BIN)/sgx_edger8r
 SGX_ENCLAVE_SIGNER := $(SGX_BIN)/sgx_sign
 SGX_LIBRARY_PATH := $(SGX_SDK)/lib64
@@ -29,14 +30,10 @@ else
 	RUST_FLAGS := --release
 endif
 
-ifneq ($(SGX_EMULATOR), no)
-	TRTS_LIB := sgx_trts
-	SERVICE_LIB := sgx_tservice
-else
+TRTS_LIB := sgx_trts
+ifeq ($(SGX_SIMULATION),yes)
 	TRTS_LIB := sgx_trts_sim
-	SERVICE_LIB := sgx_tservice_sim
 endif
-
 
 INCLUDES := -I $(SGX_SDK)/include
 CC_FLAGS := $(SGX_COMMON_CFLAGS) -fPIC -Wno-attributes $(INCLUDES)
@@ -93,7 +90,8 @@ $(ENCLAVE_STUB): target/$(ENVIRONMENT)/enclave_u.o
 
 $(LIBADAPTERS): libadapters/Cargo.toml $(wildcard libadapters/src/*.rs) $(ENCLAVE_STUB)
 	@printf -- '\nBuilding \e[1;36m$@\e[0m\n\n'
-	ENVIRONMENT=$(ENVIRONMENT) SGX_SDK=$(SGX_SDK) cargo build $(RUST_FLAGS) --manifest-path $<
+	ENVIRONMENT=$(ENVIRONMENT) SGX_SDK=$(SGX_SDK) $(CARGO) build $(RUST_FLAGS) --manifest-path $<
+	#$(CXX) libadapters/$(LIBADAPTERS) -o $@ $(LIB_RS_LD_FLAGS)
 	cp libadapters/$(LIBADAPTERS) $@
 
 # Enclave ---------------
@@ -105,7 +103,7 @@ $(RT_PATCH):
 
 $(ENCLAVE): enclave/Cargo.toml $(wildcard enclave/src/*.rs)
 	@printf -- '\nBuilding \e[1;36m$@\e[0m\n\n'
-	ENVIRONMENT=$(ENVIRONMENT) SGX_SDK=$(SGX_SDK) cargo build $(RUST_FLAGS) --manifest-path $<
+	ENVIRONMENT=$(ENVIRONMENT) SGX_SDK=$(SGX_SDK) $(CARGO) build $(RUST_FLAGS) --manifest-path $<
 	cp enclave/$(ENCLAVE) $@
 
 $(TRUSTED_EDL_FILES): $(SGX_EDGER8R) enclave/enclave.edl
@@ -118,6 +116,7 @@ target/$(ENVIRONMENT)/enclave_t.o: $(TRUSTED_EDL_FILES) $(ENCLAVE) $(RT_PATCH)
 
 $(PATCHED_ENCLAVE): target/$(ENVIRONMENT)/enclave_t.o
 	@printf -- '\nBuilding \e[1;36m$@\e[0m\n\n'
+	@printf -- '\nLinking against simulation libraries: \e[1;91m$(SGX_SIMULATION)\e[0m\n\n'
 	$(CXX) $< -o $@ $(ENCLAVE_RS_LD_FLAGS)
 
 $(SIGNED_ENCLAVE): $(PATCHED_ENCLAVE)
@@ -127,6 +126,6 @@ $(SIGNED_ENCLAVE): $(PATCHED_ENCLAVE)
 # Clean -----------------
 
 clean:
-	cd libadapters && cargo clean
-	cd enclave && cargo clean
+	cd libadapters && $(CARGO) clean
+	cd enclave && $(CARGO) clean
 	rm -rf target

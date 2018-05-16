@@ -51,6 +51,11 @@ func (cli *Client) RunNode(c *clipkg.Context) error {
 	logger.SetLogger(config.CreateProductionLogger())
 	logger.Infow("Starting Chainlink Node " + strpkg.Version + " at commit " + strpkg.Sha)
 
+	_, err := C.init_enclave()
+	if err != nil {
+		return cli.errorOut(fmt.Errorf("error initializing SGX enclave: %+v", err))
+	}
+
 	app := cli.AppFactory.NewApplication(config)
 	store := app.GetStore()
 	cli.Auth.Authenticate(store, c.String("password"))

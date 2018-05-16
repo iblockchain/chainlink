@@ -6,6 +6,9 @@ build = "build.rs"
 
 [lib]
 crate-type = ["cdylib"]
+# FIXME: Want to link statically but need static versions of the sgx libraries
+#crate-type = ["staticlib"]
+#lto = false
 
 [features]
 default = []
